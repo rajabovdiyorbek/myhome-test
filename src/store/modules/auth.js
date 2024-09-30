@@ -35,6 +35,9 @@ const actions = {
     } catch (error) {
       commit("SET_ERROR", "Неправильные данные");
       console.error("Login error:", error);
+      setTimeout(() => {
+        commit("CLEAR_ERROR");
+      }, 3000);
     }
   },
 };
