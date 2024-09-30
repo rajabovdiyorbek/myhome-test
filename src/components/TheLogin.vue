@@ -17,26 +17,31 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "TheLogin",
   data() {
     return {
       username: "",
       password: "",
-      errorMessage: "",
     };
   },
+  computed: {
+    ...mapGetters({ errorMessage: "auth/getErrorMessage" }),
+  },
   methods: {
-    handleSubmit() {
-      if (this.username === "user" && this.password === "password") {
-        this.$router.push("/home");
-      } else {
-        this.errorMessage = "Неверное имя пользователя или пароль.";
+    ...mapActions({ login: "auth/login" }),
+    async handleSubmit() {
+      await this.login({ username: this.username, password: this.password });
+      if (this.$store.state.auth.token) {
+        this.$router.push("/");
       }
     },
   },
 };
 </script>
+
 <style scoped lang="scss">
 .login-container {
   max-width: 400px;
