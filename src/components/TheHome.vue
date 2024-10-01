@@ -1,10 +1,14 @@
 <template>
-  <div>home</div>
+  <ApplicationsList />
 </template>
 
 <script>
+import ApplicationsList from "./ApplicationsList.vue";
 export default {
   name: "TheHome",
+  components: {
+    ApplicationsList,
+  },
 };
 </script>
 
