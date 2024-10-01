@@ -2,7 +2,9 @@
   <div class="applications-wrapper">
     <div class="applications-title">Список заявок</div>
     <div class="applications-table">
-      <div class="table-create"><div class="btn">СОЗДАТЬ</div></div>
+      <div class="table-create">
+        <div class="btn" @click="showModal = true">СОЗДАТЬ</div>
+      </div>
       <div class="table-filters">
         <div class="filters-search">
           <input type="text" placeholder="Поиск (№ заявки, название)" />
@@ -185,21 +187,25 @@
         :totalPages="totalPages"
         @update:currentPage="setCurrentPage"
       />
+      <AppModal :isVisible="showModal" @close="showModal = false" />
     </div>
   </div>
 </template>
 
 <script>
+import AppModal from "./AppModal.vue";
 import ThePagination from "./ThePagination.vue";
 
 export default {
   components: {
     ThePagination,
+    AppModal,
   },
   data() {
     return {
       currentPage: 1,
       totalPages: 12,
+      showModal: false,
     };
   },
   methods: {
