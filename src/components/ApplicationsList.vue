@@ -180,14 +180,35 @@
           <div class="row-status">Новая</div>
         </div>
       </div>
+      <ThePagination
+        :currentPage="currentPage"
+        :totalPages="totalPages"
+        @update:currentPage="setCurrentPage"
+      />
     </div>
   </div>
 </template>
 
 <script>
-export default {};
-</script>
+import ThePagination from "./ThePagination.vue";
 
+export default {
+  components: {
+    ThePagination,
+  },
+  data() {
+    return {
+      currentPage: 1,
+      totalPages: 12,
+    };
+  },
+  methods: {
+    setCurrentPage(page) {
+      this.currentPage = page;
+    },
+  },
+};
+</script>
 <style lang="scss" scoped>
 .applications-wrapper {
   max-width: 1280px;
