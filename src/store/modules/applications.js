@@ -46,12 +46,7 @@ const actions = {
   async fetchApplications({ commit, state }) {
     try {
       const response = await axios.get(
-        `/appeals/v1.0/appeals/?page=${state.currentPage}&page_size=${state.pageSize}&search=${state.searchQuery}&premise_id=${state.premiseId}`,
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("userToken")}`,
-          },
-        }
+        `/appeals/v1.0/appeals/?page=${state.currentPage}&page_size=${state.pageSize}&search=${state.searchQuery}&premise_id=${state.premiseId}`
       );
       commit("SET_APPLICATIONS_COUNT", response.data.count);
       commit("SET_APPLICATIONS", response.data.results);
@@ -63,11 +58,7 @@ const actions = {
 
   async fetchPremises({ commit }) {
     try {
-      const response = await axios.get("/geo/v2.0/user-premises/", {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("userToken")}`,
-        },
-      });
+      const response = await axios.get("/geo/v2.0/user-premises/");
       commit("SET_PREMISES", response.data.results);
     } catch (error) {
       console.error("Ошибка при получении помещений:", error);
@@ -76,12 +67,7 @@ const actions = {
   async fetchApartaments({ commit }, premise_id) {
     try {
       const response = await axios.get(
-        `/geo/v1.0/apartments/?premise_id=${premise_id}&search=`,
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("userToken")}`,
-          },
-        }
+        `/geo/v1.0/apartments/?premise_id=${premise_id}&search=`
       );
       commit("SET_APARTAMENTS", response.data.results);
     } catch (error) {
@@ -92,11 +78,7 @@ const actions = {
   async createApplication({ dispatch }, applicationData) {
     console.log("here", applicationData);
     try {
-      await axios.post("/appeals/v1.0/appeals/", applicationData, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("userToken")}`,
-        },
-      });
+      await axios.post("/appeals/v1.0/appeals/", applicationData);
       await dispatch("fetchApplications"); // Обновляем список заявок после создания
     } catch (error) {
       alert(`${error.response?.data?.detail || error.message}`);
@@ -108,12 +90,7 @@ const actions = {
     try {
       await axios.patch(
         `/appeals/v1.0/appeals/${applicationData.id}/`,
-        applicationData,
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("userToken")}`,
-          },
-        }
+        applicationData
       );
       await dispatch("fetchApplications"); // Обновляем список заявок после редактирования
     } catch (error) {
