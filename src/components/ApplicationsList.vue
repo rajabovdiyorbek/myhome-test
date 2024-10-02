@@ -73,119 +73,45 @@
           <div class="row-info">Срок</div>
           <div class="row-info">Статус</div>
         </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
+        <div
+          class="content-row"
+          v-for="application in getApplications"
+          :key="application.id"
+        >
+          <div class="row-number">
+            <span>{{ application.number }}</span>
           </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
+          <div class="row-created">
+            {{ formatDate(application.created_at) }}
           </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
+          <div class="row-address">
+            {{ application.premise?.address ?? "Лесная, 10, кв. 5" }}
           </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
+          <div class="row-autor">
+            {{
+              application.applicant.first_name
+                ? application.applicant.first_name
+                : "Забавкин А.П."
+            }}
           </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
           <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
+            {{
+              application.description
+                ? application.description
+                : " Подкрасить царапины на стенах в гостиной."
+            }}
           </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
-          </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
-          </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
-          </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">Подкрасить</div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
-        </div>
-        <div class="content-row">
-          <div class="row-number"><span>390</span></div>
-          <div class="row-created">17.04.2024</div>
-          <div class="row-address">Лесная, 10, кв. 5</div>
-          <div class="row-autor">Забавкин А.П.</div>
-          <div class="row-description">
-            Подкрасить царапины на стенах в гостиной.
-          </div>
-          <div class="row-date">24.04.2024 10:00</div>
-          <div class="row-status">Новая</div>
+          <div class="row-date">{{ formatDate(application.due_date) }}</div>
+          <div class="row-status">{{ application.status.name }}</div>
         </div>
       </div>
       <ThePagination
-        :currentPage="currentPage"
-        :totalPages="totalPages"
+        :currentPage="getCurrentPage"
+        :totalPages="getTotalPages"
+        :pageSize="getPageSize"
+        :pageCount="getApplicationsCount"
         @update:currentPage="setCurrentPage"
+        @update:pageSize="setPageSize"
       />
       <AppModal :isVisible="showModal" @close="showModal = false" />
     </div>
@@ -193,14 +119,11 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import AppModal from "./AppModal.vue";
 import ThePagination from "./ThePagination.vue";
-
 export default {
-  components: {
-    ThePagination,
-    AppModal,
-  },
+  name: "ApplicationsList",
   data() {
     return {
       currentPage: 1,
@@ -208,10 +131,41 @@ export default {
       showModal: false,
     };
   },
+  components: {
+    ThePagination,
+    AppModal,
+  },
+  computed: {
+    ...mapGetters({
+      getApplications: "applications/getApplications",
+      getCurrentPage: "applications/getCurrentPage",
+      getApplicationsCount: "applications/getApplicationsCount",
+      getPageSize: "applications/getPageSize",
+      getTotalPages: "applications/getTotalPages",
+    }),
+  },
   methods: {
-    setCurrentPage(page) {
-      this.currentPage = page;
+    ...mapActions({
+      fetchApplications: "applications/fetchApplications",
+      setCurrentPage: "applications/setCurrentPage",
+      setPageSize: "applications/setPageSize",
+    }),
+    formatDate(dateString) {
+      const date = new Date(dateString);
+
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+
+      return `${day}.${month}.${year}`;
     },
+  },
+  async mounted() {
+    await this.fetchApplications();
+  },
+  watch: {
+    currentPage: "fetchApplications",
+    pageSize: "fetchApplications",
   },
 };
 </script>

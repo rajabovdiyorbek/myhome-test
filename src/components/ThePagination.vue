@@ -2,10 +2,17 @@
   <div class="table-pagination">
     <div class="pagination-size">
       <div class="size-count">
-        <span>1–10</span> из <span>1500</span> записей
+        <span>1– {{ pageSize }}</span> из <span>{{ pageCount }}</span> записей
       </div>
       <div class="size-select">
-        <input type="text" placeholder="10" />
+        <select
+          v-model="selectedSize"
+          @change="updatePageSize($event.target.value)"
+        >
+          <option v-for="size in pageCount" :key="size" :value="size">
+            {{ size }}
+          </option>
+        </select>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -188,12 +195,25 @@
 <script>
 export default {
   name: "ThePagination",
+  data() {
+    return {
+      selectedSize: this.pageSize,
+    };
+  },
   props: {
     currentPage: {
       type: Number,
       required: true,
     },
     totalPages: {
+      type: Number,
+      required: true,
+    },
+    pageSize: {
+      type: Number,
+      required: true,
+    },
+    pageCount: {
       type: Number,
       required: true,
     },
@@ -237,6 +257,9 @@ export default {
       if (page !== this.currentPage) {
         this.$emit("update:currentPage", page);
       }
+    },
+    updatePageSize(newSize) {
+      this.$emit("update:pageSize", newSize);
     },
     goToFirstPage() {
       this.changePage(1);
@@ -283,11 +306,17 @@ export default {
       align-items: center;
       border-bottom: 1px solid #e0e0e0;
 
-      input {
+      select {
         width: 100%;
         padding: 10px;
         border: none;
         outline: none;
+      }
+      select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        text-indent: 1px;
+        text-overflow: "";
       }
     }
   }
