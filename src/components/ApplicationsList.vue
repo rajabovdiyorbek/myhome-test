@@ -7,7 +7,12 @@
       </div>
       <div class="table-filters">
         <div class="filters-search">
-          <input type="text" placeholder="Поиск (№ заявки, название)" />
+          <input
+            type="text"
+            v-model="searchQuery"
+            @input="updateSearch"
+            placeholder="Поиск (№ заявки, название)"
+          />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -35,7 +40,19 @@
           </svg>
         </div>
         <div class="filters-select">
-          <input type="text" placeholder="Дом" />
+          <select
+            placeholder="Дом"
+            v-model="selectedPremiseId"
+            @change="updatePremise"
+          >
+            <option
+              v-for="premise in getPremises"
+              :key="premise.id"
+              :value="premise.id"
+            >
+              {{ premise.address }}
+            </option>
+          </select>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -129,6 +146,8 @@ export default {
       currentPage: 1,
       totalPages: 12,
       showModal: false,
+      selectedPremiseId: "",
+      searchQuery: "",
     };
   },
   components: {
@@ -142,13 +161,18 @@ export default {
       getApplicationsCount: "applications/getApplicationsCount",
       getPageSize: "applications/getPageSize",
       getTotalPages: "applications/getTotalPages",
+      getPremises: "applications/getPremises",
+      getSearchQuery: "applications/getSearchQuery",
     }),
   },
   methods: {
     ...mapActions({
       fetchApplications: "applications/fetchApplications",
+      fetchPremises: "applications/fetchPremises",
       setCurrentPage: "applications/setCurrentPage",
       setPageSize: "applications/setPageSize",
+      setPremiseId: "applications/setPremiseId",
+      setSearchQuery: "applications/setSearchQuery",
     }),
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -159,8 +183,15 @@ export default {
 
       return `${day}.${month}.${year}`;
     },
+    updatePremise() {
+      this.setPremiseId(this.selectedPremiseId);
+    },
+    updateSearch() {
+      this.setSearchQuery(this.searchQuery);
+    },
   },
   async mounted() {
+    await this.fetchPremises();
     await this.fetchApplications();
   },
   watch: {
@@ -226,6 +257,18 @@ export default {
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
   margin-right: 15px;
+  select {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    outline: none;
+  }
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: "";
+  }
 }
 .filters-search input,
 .filters-select input {
