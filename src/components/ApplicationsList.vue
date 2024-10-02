@@ -123,7 +123,7 @@
           <div class="row-status">{{ application.status.name }}</div>
         </div>
       </div>
-      <ThePagination
+      <AppPagination
         :currentPage="getCurrentPage"
         :totalPages="getTotalPages"
         :pageSize="getPageSize"
@@ -143,7 +143,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import AppModal from "./AppModal.vue";
-import ThePagination from "./ThePagination.vue";
+import AppPagination from "./AppPagination.vue";
 export default {
   name: "ApplicationsList",
   data() {
@@ -157,7 +157,7 @@ export default {
     };
   },
   components: {
-    ThePagination,
+    AppPagination,
     AppModal,
   },
   computed: {
