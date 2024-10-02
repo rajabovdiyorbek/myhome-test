@@ -21,13 +21,10 @@ const mutations = {
 const actions = {
   async login({ commit }, { username, password }) {
     try {
-      const response = await axios.post(
-        "https://dev.moydomonline.ru/api/auth/login/",
-        {
-          username,
-          password,
-        }
-      );
+      const response = await axios.post("/auth/login/", {
+        username,
+        password,
+      });
 
       const { key } = response.data;
       commit("SET_TOKEN", key);

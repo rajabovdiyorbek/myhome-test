@@ -4,7 +4,11 @@
       <div class="modal-header">
         <div class="header-title">
           {{
-            localApplicationData.id ? "Редактировать заявку" : "Создание заявки"
+            localApplicationData.id
+              ? `Заявка № ${localApplicationData.number} (от ${formatDate(
+                  localApplicationData.created_at
+                )})`
+              : "Создание заявки"
           }}
         </div>
         <div class="header-status">
@@ -18,7 +22,7 @@
       <div class="modal-body">
         <div class="fields">
           <div class="field-select">
-            <select placeholder="Дом" v-model="selectedPremiseId">
+            <select v-model="localApplicationData.premise_id">
               <option
                 v-for="premise in getPremises"
                 :key="premise.id"
@@ -55,7 +59,7 @@
             </svg>
           </div>
           <div class="field-select">
-            <select placeholder="Дом" v-model="selectedApartmentId">
+            <select v-model="localApplicationData.apartment_id">
               <option
                 v-for="apartament in getApartaments"
                 :key="apartament.id"
@@ -175,7 +179,8 @@ export default {
         id: null,
         status: null,
         due_date: "",
-        apartment_id: "",
+        premise_id: null,
+        apartment_id: null,
         description: "",
         applicant: {
           last_name: "",
@@ -184,8 +189,6 @@ export default {
           username: "",
         },
       },
-      selectedPremiseId: "",
-      selectedApartmentId: "",
     };
   },
   computed: {
@@ -200,7 +203,6 @@ export default {
       createApplication: "applications/createApplication",
     }),
     closeModal() {
-      this.resetLocalApplicationData();
       this.$emit("close");
     },
     resetLocalApplicationData() {
@@ -208,7 +210,8 @@ export default {
         id: null,
         status: null,
         due_date: "",
-        apartment_id: "",
+        premise_id: null,
+        apartment_id: null,
         description: "",
         applicant: {
           last_name: "",
@@ -217,6 +220,15 @@ export default {
           username: "",
         },
       };
+    },
+    openModal() {
+      if (this.applicationData && this.applicationData.id) {
+        // Если данные переданы, копируем их в локальное состояние для редактирования
+        this.localApplicationData = { ...this.applicationData };
+      } else {
+        // Если это новая заявка, сбрасываем состояние
+        this.resetLocalApplicationData();
+      }
     },
     submitApplication() {
       // Проверка и форматирование даты
@@ -230,7 +242,6 @@ export default {
       } else {
         this.localApplicationData.id = this.generateUUID();
         this.localApplicationData.status_id = 0;
-        this.localApplicationData.apartment_id = this.selectedApartmentId;
 
         this.createApplication(this.localApplicationData);
       }
@@ -254,26 +265,13 @@ export default {
       );
     },
   },
-  async mounted() {},
   watch: {
-    applicationData: {
-      handler(newVal) {
-        // Проверяем, существует ли newVal и его свойство applicant
-        if (newVal) {
-          this.localApplicationData = {
-            ...this.localApplicationData,
-            ...newVal,
-            applicant: {
-              ...this.localApplicationData.applicant,
-              ...(newVal.applicant || {}),
-            },
-          };
-        } else {
-          // Обработать случай, когда applicationData равен null или undefined
-          this.resetLocalApplicationData();
-        }
-      },
-      deep: true,
+    isVisible(newValue) {
+      if (newValue) {
+        this.openModal();
+      } else {
+        this.resetLocalApplicationData();
+      }
     },
   },
 };

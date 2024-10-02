@@ -63,14 +63,11 @@ const actions = {
 
   async fetchPremises({ commit }) {
     try {
-      const response = await axios.get(
-        "https://dev.moydomonline.ru/api/geo/v2.0/user-premises/",
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("userToken")}`,
-          },
-        }
-      );
+      const response = await axios.get("/geo/v2.0/user-premises/", {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("userToken")}`,
+        },
+      });
       commit("SET_PREMISES", response.data.results);
     } catch (error) {
       console.error("Ошибка при получении помещений:", error);
@@ -79,7 +76,7 @@ const actions = {
   async fetchApartaments({ commit }, premise_id) {
     try {
       const response = await axios.get(
-        `https://dev.moydomonline.ru/api/geo/v1.0/apartments/?premise_id=${premise_id}&search=`,
+        `/geo/v1.0/apartments/?premise_id=${premise_id}&search=`,
         {
           headers: {
             Authorization: `Token ${localStorage.getItem("userToken")}`,
@@ -95,25 +92,22 @@ const actions = {
   async createApplication({ dispatch }, applicationData) {
     console.log("here", applicationData);
     try {
-      await axios.post(
-        "https://dev.moydomonline.ru/api/appeals/v1.0/appeals/",
-        applicationData,
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("userToken")}`,
-          },
-        }
-      );
+      await axios.post("/appeals/v1.0/appeals/", applicationData, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("userToken")}`,
+        },
+      });
       await dispatch("fetchApplications"); // Обновляем список заявок после создания
     } catch (error) {
-      console.error("Ошибка при создании заявки:", error);
+      alert(`${error.response?.data?.detail || error.message}`);
     }
   },
 
-  async updateApplication({ dispatch }, { applicationData }) {
+  async updateApplication({ dispatch }, applicationData) {
+    console.log(applicationData);
     try {
       await axios.patch(
-        `https://dev.moydomonline.ru/api/appeals/v1.0/appeals/${applicationData.applicant.id}/`,
+        `/appeals/v1.0/appeals/${applicationData.id}/`,
         applicationData,
         {
           headers: {
@@ -123,7 +117,7 @@ const actions = {
       );
       await dispatch("fetchApplications"); // Обновляем список заявок после редактирования
     } catch (error) {
-      console.error("Ошибка при редактировании заявки:", error);
+      alert(`${error.response?.data?.detail || error.message}`);
     }
   },
 
