@@ -9,6 +9,7 @@ const state = {
   searchQuery: "",
   premiseId: "",
   premises: [],
+  apartaments: [],
 };
 
 const mutations = {
@@ -36,10 +37,12 @@ const mutations = {
   SET_PREMISES(state, premises) {
     state.premises = premises;
   },
+  SET_APARTAMENTS(state, apartaments) {
+    state.apartaments = apartaments;
+  },
 };
 
 const actions = {
-  // Existing actions
   async fetchApplications({ commit, state }) {
     try {
       const response = await axios.get(
@@ -68,10 +71,59 @@ const actions = {
           },
         }
       );
-      console.log(response.data.results);
-      commit("SET_PREMISES", response.data.results); // Adjust based on the API response structure
+      commit("SET_PREMISES", response.data.results);
     } catch (error) {
       console.error("Ошибка при получении помещений:", error);
+    }
+  },
+  async fetchApartaments({ commit }, premise_id) {
+    try {
+      const response = await axios.get(
+        `https://dev.moydomonline.ru/api/geo/v1.0/apartments/?premise_id=${premise_id}&search=`,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      commit("SET_APARTAMENTS", response.data.results);
+    } catch (error) {
+      console.error("Ошибка при получении помещений:", error);
+    }
+  },
+
+  async createApplication({ dispatch }, applicationData) {
+    console.log("here", applicationData);
+    try {
+      await axios.post(
+        "https://dev.moydomonline.ru/api/appeals/v1.0/appeals/",
+        applicationData,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      await dispatch("fetchApplications"); // Обновляем список заявок после создания
+    } catch (error) {
+      console.error("Ошибка при создании заявки:", error);
+    }
+  },
+
+  async updateApplication({ dispatch }, { applicationData }) {
+    try {
+      await axios.patch(
+        `https://dev.moydomonline.ru/api/appeals/v1.0/appeals/${applicationData.applicant.id}/`,
+        applicationData,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      await dispatch("fetchApplications"); // Обновляем список заявок после редактирования
+    } catch (error) {
+      console.error("Ошибка при редактировании заявки:", error);
     }
   },
 
@@ -79,15 +131,18 @@ const actions = {
     commit("SET_CURRENT_PAGE", page);
     dispatch("fetchApplications");
   },
+
   setPageSize({ commit, dispatch }, pageSize) {
     commit("SET_PAGE_SIZE", pageSize);
     dispatch("fetchApplications");
   },
+
   setSearchQuery({ commit, dispatch }, query) {
     commit("SET_SEARCH_QUERY", query);
     commit("SET_CURRENT_PAGE", 1);
     dispatch("fetchApplications");
   },
+
   setPremiseId({ commit, dispatch }, premiseId) {
     commit("SET_PREMISE_ID", premiseId);
     commit("SET_CURRENT_PAGE", 1);
@@ -104,6 +159,7 @@ const getters = {
   getSearchQuery: (state) => state.searchQuery,
   getPremiseId: (state) => state.premiseId,
   getPremises: (state) => state.premises,
+  getApartaments: (state) => state.apartaments,
 };
 
 export default {

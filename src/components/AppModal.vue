@@ -2,15 +2,32 @@
   <div v-if="isVisible" class="modal-overlay" @click.self="closeModal">
     <div class="modal-container">
       <div class="modal-header">
-        <div class="header-title">Создание заявки</div>
-        <div class="header-status">Новая</div>
+        <div class="header-title">
+          {{
+            localApplicationData.id ? "Редактировать заявку" : "Создание заявки"
+          }}
+        </div>
+        <div class="header-status">
+          {{
+            localApplicationData.status?.name
+              ? localApplicationData.status?.name
+              : "Новая"
+          }}
+        </div>
       </div>
       <div class="modal-body">
         <div class="fields">
           <div class="field-select">
-            <input type="text" id="home" placeholder="Дом" />
+            <select placeholder="Дом" v-model="selectedPremiseId">
+              <option
+                v-for="premise in getPremises"
+                :key="premise.id"
+                :value="premise.id"
+              >
+                {{ premise.address }}
+              </option>
+            </select>
             <label class="label" for="home">Дом</label>
-
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -38,9 +55,16 @@
             </svg>
           </div>
           <div class="field-select">
-            <input type="text" id="kv" placeholder="Квартира" />
+            <select placeholder="Дом" v-model="selectedApartmentId">
+              <option
+                v-for="apartament in getApartaments"
+                :key="apartament.id"
+                :value="apartament.id"
+              >
+                {{ apartament.label }}
+              </option>
+            </select>
             <label class="label" for="kv">Квартира</label>
-
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -68,36 +92,62 @@
             </svg>
           </div>
           <div class="field-input">
-            <input type="text" id="srok" placeholder="Срок" />
+            <input
+              type="date"
+              id="srok"
+              v-model="localApplicationData.due_date"
+              placeholder="Срок"
+            />
             <label class="label" for="srok">Срок</label>
           </div>
         </div>
         <div class="fields">
           <div class="field-input">
-            <input type="text" placeholder="Фамилия" />
+            <input
+              type="text"
+              v-model="localApplicationData.applicant.last_name"
+              placeholder="Фамилия"
+            />
             <label class="label">Фамилия</label>
           </div>
           <div class="field-input">
-            <input type="text" placeholder="Имя" />
+            <input
+              type="text"
+              v-model="localApplicationData.applicant.first_name"
+              placeholder="Имя"
+            />
             <label class="label">Имя</label>
           </div>
           <div class="field-input">
-            <input type="text" placeholder="Отчество" />
+            <input
+              type="text"
+              v-model="localApplicationData.applicant.patronymic_name"
+              placeholder="Отчество"
+            />
             <label class="label">Отчество</label>
           </div>
           <div class="field-input">
-            <input type="text" placeholder="Телефон" />
+            <input
+              type="text"
+              v-model="localApplicationData.applicant.username"
+              placeholder="Телефон"
+            />
             <label class="label">Телефон</label>
           </div>
         </div>
         <div class="fields">
           <div class="field-textarea">
-            <textarea type="text" placeholder="Описание заявки" />
+            <textarea
+              v-model="localApplicationData.description"
+              placeholder="Описание заявки"
+            ></textarea>
             <label class="label">Описание заявки</label>
           </div>
         </div>
         <div class="fields">
-          <div class="btn">Создать</div>
+          <div class="btn" @click="submitApplication">
+            {{ localApplicationData.id ? "Сохранить" : "Создать" }}
+          </div>
         </div>
       </div>
     </div>
@@ -105,6 +155,8 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "AppModal",
   props: {
@@ -112,10 +164,116 @@ export default {
       type: Boolean,
       required: true,
     },
+    applicationData: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  data() {
+    return {
+      localApplicationData: {
+        id: null,
+        status: null,
+        due_date: "",
+        apartment_id: "",
+        description: "",
+        applicant: {
+          last_name: "",
+          first_name: "",
+          patronymic_name: "",
+          username: "",
+        },
+      },
+      selectedPremiseId: "",
+      selectedApartmentId: "",
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getPremises: "applications/getPremises",
+      getApartaments: "applications/getApartaments",
+    }),
   },
   methods: {
+    ...mapActions({
+      updateApplication: "applications/updateApplication",
+      createApplication: "applications/createApplication",
+    }),
     closeModal() {
+      this.resetLocalApplicationData();
       this.$emit("close");
+    },
+    resetLocalApplicationData() {
+      this.localApplicationData = {
+        id: null,
+        status: null,
+        due_date: "",
+        apartment_id: "",
+        description: "",
+        applicant: {
+          last_name: "",
+          first_name: "",
+          patronymic_name: "",
+          username: "",
+        },
+      };
+    },
+    submitApplication() {
+      // Проверка и форматирование даты
+      if (this.localApplicationData.due_date) {
+        const date = new Date(this.localApplicationData.due_date);
+        this.localApplicationData.due_date = date.toISOString();
+      }
+
+      if (this.localApplicationData.id) {
+        this.updateApplication(this.localApplicationData);
+      } else {
+        this.localApplicationData.id = this.generateUUID();
+        this.localApplicationData.status_id = 0;
+        this.localApplicationData.apartment_id = this.selectedApartmentId;
+
+        this.createApplication(this.localApplicationData);
+      }
+      this.closeModal();
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    },
+    generateUUID() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+          const r = (Math.random() * 16) | 0;
+          const v = c === "x" ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        }
+      );
+    },
+  },
+  async mounted() {},
+  watch: {
+    applicationData: {
+      handler(newVal) {
+        // Проверяем, существует ли newVal и его свойство applicant
+        if (newVal) {
+          this.localApplicationData = {
+            ...this.localApplicationData,
+            ...newVal,
+            applicant: {
+              ...this.localApplicationData.applicant,
+              ...(newVal.applicant || {}),
+            },
+          };
+        } else {
+          // Обработать случай, когда applicationData равен null или undefined
+          this.resetLocalApplicationData();
+        }
+      },
+      deep: true,
     },
   },
 };
@@ -229,6 +387,20 @@ export default {
 input {
   padding-left: 0px !important;
 }
+select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: "";
+}
+select:focus + label,
+select:not(:placeholder-shown) + label,
 textarea:focus + label,
 textarea:not(:placeholder-shown) + label,
 input:focus + label,

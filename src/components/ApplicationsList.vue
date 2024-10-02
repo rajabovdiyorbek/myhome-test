@@ -3,7 +3,7 @@
     <div class="applications-title">Список заявок</div>
     <div class="applications-table">
       <div class="table-create">
-        <div class="btn" @click="showModal = true">СОЗДАТЬ</div>
+        <div class="btn" @click="showCreateModal">СОЗДАТЬ</div>
       </div>
       <div class="table-filters">
         <div class="filters-search">
@@ -94,6 +94,7 @@
           class="content-row"
           v-for="application in getApplications"
           :key="application.id"
+          @click="showEditModal(application)"
         >
           <div class="row-number">
             <span>{{ application.number }}</span>
@@ -130,7 +131,11 @@
         @update:currentPage="setCurrentPage"
         @update:pageSize="setPageSize"
       />
-      <AppModal :isVisible="showModal" @close="showModal = false" />
+      <AppModal
+        :applicationData="modalApplicationData"
+        :isVisible="showModal"
+        @close="showModal = false"
+      />
     </div>
   </div>
 </template>
@@ -148,6 +153,7 @@ export default {
       showModal: false,
       selectedPremiseId: "",
       searchQuery: "",
+      modalApplicationData: null,
     };
   },
   components: {
@@ -173,6 +179,7 @@ export default {
       setPageSize: "applications/setPageSize",
       setPremiseId: "applications/setPremiseId",
       setSearchQuery: "applications/setSearchQuery",
+      fetchApartaments: "applications/fetchApartaments",
     }),
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -189,9 +196,19 @@ export default {
     updateSearch() {
       this.setSearchQuery(this.searchQuery);
     },
+    showCreateModal() {
+      this.modalApplicationData = null; // Очищаем данные для создания новой заявки
+      this.showModal = true;
+    },
+    showEditModal(application) {
+      this.modalApplicationData = application; // Передаем данные для редактирования
+      this.showModal = true;
+    },
   },
   async mounted() {
     await this.fetchPremises();
+    await this.fetchApartaments("58154706-c96d-40e4-abf2-2b5693b0909f");
+
     await this.fetchApplications();
   },
   watch: {
